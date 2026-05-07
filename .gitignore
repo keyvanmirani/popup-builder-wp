@@ -1,0 +1,47 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build / cache
+dist/
+build/
+coverage/
+
+# Composer
+vendor/
+
+# Environment
+.env
+.env.*
+
+# WordPress
+wp-config.php
+
+# Mac
+.AppleDouble
+.LSOverride
+
+# Temporary
+*.tmp
+*.swp
+*.swo
+
+# Zip exports
+*.zip
+
+# Generated language files
+*.mo
