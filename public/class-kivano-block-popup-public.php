@@ -168,7 +168,7 @@ class Kivano_Block_Popup_Public {
 		<div id="kivano-block-popup-overlay" class="kivano-block-popup-overlay" hidden>
 			<div class="kivano-block-popup-modal" role="dialog" aria-modal="true" style="<?php echo esc_attr( $modal_style ); ?>">
 				<?php if ( $popup['show_close_button'] ) : ?>
-					<button type="button" class="kivano-block-popup-close" aria-label="<?php esc_attr_e( 'Close popup', 'kivano-block-popup' ); ?>">&times;</button>
+					<button type="button" class="kivano-block-popup-close" aria-label="<?php esc_attr_e( 'Close popup', 'kivano-block-popup' ); ?>"><span class="kivano-block-popup-close-icon" aria-hidden="true">&times;</span></button>
 				<?php endif; ?>
 				<div class="kivano-block-popup-content">
 					<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>

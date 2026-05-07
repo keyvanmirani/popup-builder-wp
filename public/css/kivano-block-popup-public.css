@@ -30,35 +30,52 @@
 	position: relative;
 }
 
-.kivano-block-popup-close {
-	align-items: center;
-	background: var(--kivano-popup-close-bg, #f3f4f6);
-	border: 0;
-	border-radius: 999px;
-	box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
-	color: var(--kivano-popup-close-color, #111827);
+.kivano-block-popup-overlay .kivano-block-popup-close {
+	-webkit-appearance: none;
+	align-items: center !important;
+	appearance: none;
+	background: var(--kivano-popup-close-bg, #f3f4f6) !important;
+	border: 0 !important;
+	border-radius: 999px !important;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, .12) !important;
+	color: var(--kivano-popup-close-color, #111827) !important;
 	cursor: pointer;
-	display: flex;
+	display: flex !important;
 	font-size: 26px;
-	height: 44px;
-	inset-block-start: 16px;
-	inset-inline-end: 16px;
-	justify-content: center;
-	line-height: 1;
-	margin: 0;
-	padding: 0;
-	position: absolute;
-	width: 44px;
-	z-index: 20;
+	height: 44px !important;
+	inset-block-start: 16px !important;
+	inset-inline-end: 16px !important;
+	justify-content: center !important;
+	line-height: 1 !important;
+	margin: 0 !important;
+	min-height: 44px !important;
+	min-width: 44px !important;
+	padding: 0 !important;
+	position: absolute !important;
+	width: 44px !important;
+	z-index: 20 !important;
 }
 
-.kivano-block-popup-close:hover,
-.kivano-block-popup-close:focus {
+.kivano-block-popup-overlay .kivano-block-popup-close::before,
+.kivano-block-popup-overlay .kivano-block-popup-close::after {
+	content: none !important;
+	display: none !important;
+}
+
+.kivano-block-popup-overlay .kivano-block-popup-close-icon {
+	color: inherit;
+	font-size: 24px;
+	line-height: 1;
+	pointer-events: none;
+}
+
+.kivano-block-popup-overlay .kivano-block-popup-close:hover,
+.kivano-block-popup-overlay .kivano-block-popup-close:focus {
 	outline: none;
 }
 
-.kivano-block-popup-close:focus-visible {
-	box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--kivano-popup-close-color, #111827);
+.kivano-block-popup-overlay .kivano-block-popup-close:focus-visible {
+	box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--kivano-popup-close-color, #111827) !important;
 }
 
 .kivano-block-popup-body-lock {

@@ -16,7 +16,7 @@
  * Plugin Name:       Kivano Block Popup
  * Plugin URI:        https://github.com/keyvanmirani/kivano-block-popup-wp
  * Description:       Kivano Block Popup for wordpress with wp-blocks
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            k1mirani
  * Author URI:        https://github.com/keyvanmirani/
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'KIVANO_BLOCK_POPUP_VERSION', '1.0.1' );
+define( 'KIVANO_BLOCK_POPUP_VERSION', '1.0.2' );
 
 /**
  * The code that runs during plugin activation.
