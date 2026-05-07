@@ -29,9 +29,11 @@
 		}
 
 		var closeButton = overlay.querySelector( '.kivano-block-popup-close' );
-		var delay = Math.max( 0, parseInt( settings.delay, 10 ) || 0 ) * 1000;
-		var repeatInterval = Math.max( 0, parseInt( settings.repeatInterval, 10 ) || 0 ) * 1000;
+		var delayEnabled = true === settings.delayEnabled || '1' === settings.delayEnabled || 1 === settings.delayEnabled;
+		var delay = delayEnabled ? Math.max( 0, parseInt( settings.delay, 10 ) || 0 ) : 0;
 		var oncePerSession = true === settings.oncePerSession || '1' === settings.oncePerSession || 1 === settings.oncePerSession;
+		var repeatEnabled = ! oncePerSession && ( true === settings.repeatEnabled || '1' === settings.repeatEnabled || 1 === settings.repeatEnabled );
+		var repeatInterval = repeatEnabled ? Math.max( 0, parseInt( settings.repeatInterval, 10 ) || 0 ) : 0;
 		var sessionKey = settings.sessionKey || 'kivano_block_popup_closed';
 		var repeatTimer;
 
@@ -83,7 +85,11 @@
 			return;
 		}
 
-		window.setTimeout( showPopup, delay );
+		if ( delay > 0 ) {
+			window.setTimeout( showPopup, delay );
+		} else {
+			showPopup();
+		}
 
 		if ( closeButton ) {
 			closeButton.addEventListener( 'click', hidePopup );

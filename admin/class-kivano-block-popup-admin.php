@@ -190,8 +190,10 @@ class Kivano_Block_Popup_Admin {
 		wp_nonce_field( 'kivano_block_popup_save_meta', 'kivano_block_popup_meta_nonce' );
 
 		$enabled           = (bool) $this->get_compat_meta( $post->ID, '_kivano_block_popup_enabled', '_popup_builder_enabled', '0' );
-		$delay             = $this->get_number_meta( $post->ID, '_kivano_block_popup_delay', 4, '_popup_builder_delay' );
-		$repeat_interval   = $this->get_number_meta( $post->ID, '_kivano_block_popup_repeat_interval', 4, '_popup_builder_repeat_interval' );
+		$delay_enabled     = (bool) $this->get_compat_meta( $post->ID, '_kivano_block_popup_delay_enabled', '', '1' );
+		$delay             = $this->get_timing_meta_ms( $post->ID, '_kivano_block_popup_delay', 4000, '_popup_builder_delay' );
+		$repeat_enabled    = (bool) $this->get_compat_meta( $post->ID, '_kivano_block_popup_repeat_enabled', '', '0' );
+		$repeat_interval   = $this->get_timing_meta_ms( $post->ID, '_kivano_block_popup_repeat_interval', 0, '_popup_builder_repeat_interval' );
 		$max_width         = $this->get_number_meta( $post->ID, '_kivano_block_popup_max_width', 520, '_popup_builder_max_width' );
 		$show_close_button = $this->get_compat_meta( $post->ID, '_kivano_block_popup_show_close_button', '_popup_builder_show_close_button', true );
 		$once_per_session  = (bool) $this->get_compat_meta( $post->ID, '_kivano_block_popup_once_per_session', '_popup_builder_once_per_session', '0' );
@@ -213,12 +215,26 @@ class Kivano_Block_Popup_Admin {
 			</label>
 		</p>
 		<p>
-			<label for="kivano_block_popup_delay"><?php esc_html_e( 'Display delay in seconds', 'kivano-block-popup' ); ?></label>
-			<input class="widefat" type="number" id="kivano_block_popup_delay" name="kivano_block_popup_delay" value="<?php echo esc_attr( $delay ); ?>" min="0" step="1">
+			<label>
+				<input type="checkbox" name="kivano_block_popup_delay_enabled" value="1" data-kivano-block-popup-controls="kivano_block_popup_delay" <?php checked( $delay_enabled ); ?>>
+				<?php esc_html_e( 'Enable display delay', 'kivano-block-popup' ); ?>
+			</label>
 		</p>
 		<p>
-			<label for="kivano_block_popup_repeat_interval"><?php esc_html_e( 'Repeat interval in seconds', 'kivano-block-popup' ); ?></label>
-			<input class="widefat" type="number" id="kivano_block_popup_repeat_interval" name="kivano_block_popup_repeat_interval" value="<?php echo esc_attr( $repeat_interval ); ?>" min="0" step="1">
+			<label for="kivano_block_popup_delay"><?php esc_html_e( 'Display delay (ms)', 'kivano-block-popup' ); ?></label>
+			<input class="widefat" type="number" id="kivano_block_popup_delay" name="kivano_block_popup_delay" value="<?php echo esc_attr( $delay ); ?>" min="0" step="1" <?php disabled( ! $delay_enabled ); ?>>
+			<span class="description"><?php esc_html_e( '1000 ms = 1 second', 'kivano-block-popup' ); ?></span>
+		</p>
+		<p>
+			<label>
+				<input type="checkbox" name="kivano_block_popup_repeat_enabled" value="1" data-kivano-block-popup-controls="kivano_block_popup_repeat_interval" <?php checked( $repeat_enabled ); ?>>
+				<?php esc_html_e( 'Enable repeat interval', 'kivano-block-popup' ); ?>
+			</label>
+		</p>
+		<p>
+			<label for="kivano_block_popup_repeat_interval"><?php esc_html_e( 'Repeat interval (ms)', 'kivano-block-popup' ); ?></label>
+			<input class="widefat" type="number" id="kivano_block_popup_repeat_interval" name="kivano_block_popup_repeat_interval" value="<?php echo esc_attr( $repeat_interval ); ?>" min="0" step="1" <?php disabled( ! $repeat_enabled ); ?>>
+			<span class="description"><?php esc_html_e( '1000 ms = 1 second', 'kivano-block-popup' ); ?></span>
 		</p>
 		<p>
 			<label for="kivano_block_popup_max_width"><?php esc_html_e( 'Max width in px', 'kivano-block-popup' ); ?></label>
@@ -271,8 +287,10 @@ class Kivano_Block_Popup_Admin {
 		}
 
 		$enabled           = isset( $_POST['kivano_block_popup_enabled'] ) ? '1' : '0';
-		$delay             = isset( $_POST['kivano_block_popup_delay'] ) ? absint( wp_unslash( $_POST['kivano_block_popup_delay'] ) ) : 4;
-		$repeat_interval   = isset( $_POST['kivano_block_popup_repeat_interval'] ) ? absint( wp_unslash( $_POST['kivano_block_popup_repeat_interval'] ) ) : 4;
+		$delay_enabled     = isset( $_POST['kivano_block_popup_delay_enabled'] ) ? '1' : '0';
+		$delay             = isset( $_POST['kivano_block_popup_delay'] ) ? absint( wp_unslash( $_POST['kivano_block_popup_delay'] ) ) : $this->get_timing_meta_ms( $post_id, '_kivano_block_popup_delay', 4000, '_popup_builder_delay' );
+		$repeat_enabled    = isset( $_POST['kivano_block_popup_repeat_enabled'] ) ? '1' : '0';
+		$repeat_interval   = isset( $_POST['kivano_block_popup_repeat_interval'] ) ? absint( wp_unslash( $_POST['kivano_block_popup_repeat_interval'] ) ) : $this->get_timing_meta_ms( $post_id, '_kivano_block_popup_repeat_interval', 0, '_popup_builder_repeat_interval' );
 		$max_width         = isset( $_POST['kivano_block_popup_max_width'] ) ? absint( wp_unslash( $_POST['kivano_block_popup_max_width'] ) ) : 520;
 		$show_close_button = isset( $_POST['kivano_block_popup_show_close_button'] ) ? '1' : '0';
 		$once_per_session  = isset( $_POST['kivano_block_popup_once_per_session'] ) ? '1' : '0';
@@ -283,8 +301,11 @@ class Kivano_Block_Popup_Admin {
 		}
 
 		update_post_meta( $post_id, '_kivano_block_popup_enabled', $enabled );
+		update_post_meta( $post_id, '_kivano_block_popup_delay_enabled', $delay_enabled );
 		update_post_meta( $post_id, '_kivano_block_popup_delay', $delay );
+		update_post_meta( $post_id, '_kivano_block_popup_repeat_enabled', $repeat_enabled );
 		update_post_meta( $post_id, '_kivano_block_popup_repeat_interval', $repeat_interval );
+		update_post_meta( $post_id, '_kivano_block_popup_timing_migrated_to_ms', '1' );
 		update_post_meta( $post_id, '_kivano_block_popup_max_width', max( 240, $max_width ) );
 		update_post_meta( $post_id, '_kivano_block_popup_show_close_button', $show_close_button );
 		update_post_meta( $post_id, '_kivano_block_popup_once_per_session', $once_per_session );
@@ -309,7 +330,7 @@ class Kivano_Block_Popup_Admin {
 			if ( 'title' === $key ) {
 				$new_columns['kivano_block_popup_enabled']         = __( 'Enabled', 'kivano-block-popup' );
 				$new_columns['kivano_block_popup_delay']           = __( 'Delay', 'kivano-block-popup' );
-				$new_columns['kivano_block_popup_repeat_interval'] = __( 'Repeat Interval', 'kivano-block-popup' );
+				$new_columns['kivano_block_popup_repeat_interval'] = __( 'Repeat', 'kivano-block-popup' );
 			}
 		}
 
@@ -344,17 +365,24 @@ class Kivano_Block_Popup_Admin {
 
 		if ( 'kivano_block_popup_delay' === $column ) {
 			printf(
-				/* translators: %d: delay in seconds. */
-				esc_html__( '%d sec', 'kivano-block-popup' ),
-				absint( $this->get_number_meta( $post_id, '_kivano_block_popup_delay', 4, '_popup_builder_delay' ) )
+				/* translators: %d: delay in milliseconds. */
+				esc_html__( '%d ms', 'kivano-block-popup' ),
+				absint( $this->get_timing_meta_ms( $post_id, '_kivano_block_popup_delay', 4000, '_popup_builder_delay' ) )
 			);
 		}
 
 		if ( 'kivano_block_popup_repeat_interval' === $column ) {
+			$repeat_enabled = (bool) $this->get_compat_meta( $post_id, '_kivano_block_popup_repeat_enabled', '', '0' );
+
+			if ( ! $repeat_enabled ) {
+				esc_html_e( 'Disabled', 'kivano-block-popup' );
+				return;
+			}
+
 			printf(
-				/* translators: %d: repeat interval in seconds. */
-				esc_html__( '%d sec', 'kivano-block-popup' ),
-				absint( $this->get_number_meta( $post_id, '_kivano_block_popup_repeat_interval', 4, '_popup_builder_repeat_interval' ) )
+				/* translators: %d: repeat interval in milliseconds. */
+				esc_html__( '%d ms', 'kivano-block-popup' ),
+				absint( $this->get_timing_meta_ms( $post_id, '_kivano_block_popup_repeat_interval', 0, '_popup_builder_repeat_interval' ) )
 			);
 		}
 
@@ -418,6 +446,35 @@ class Kivano_Block_Popup_Admin {
 		}
 
 		return absint( $value );
+
+	}
+
+	/**
+	 * Get timing meta normalized to milliseconds.
+	 *
+	 * @since    1.0.0
+	 * @param    int    $post_id    The post ID.
+	 * @param    string $key        Meta key.
+	 * @param    int    $default    Default value in milliseconds.
+	 * @param    string $legacy_key Legacy meta key.
+	 * @return   int
+	 */
+	private function get_timing_meta_ms( $post_id, $key, $default, $legacy_key = '' ) {
+
+		$value = $this->get_compat_meta( $post_id, $key, $legacy_key, '' );
+
+		if ( '' === $value ) {
+			return absint( $default );
+		}
+
+		$value    = absint( $value );
+		$migrated = (bool) get_post_meta( $post_id, '_kivano_block_popup_timing_migrated_to_ms', true );
+
+		if ( ! $migrated && $value > 0 && $value < 1000 ) {
+			return $value * 1000;
+		}
+
+		return $value;
 
 	}
 

@@ -89,6 +89,22 @@
 			} );
 	}
 
+	function syncControlledField( control ) {
+		var field = document.getElementById( control.dataset.kivanoBlockPopupControls || '' );
+
+		if ( field ) {
+			field.disabled = ! control.checked;
+		}
+	}
+
+	document.querySelectorAll( '[data-kivano-block-popup-controls]' ).forEach( function( control ) {
+		syncControlledField( control );
+
+		control.addEventListener( 'change', function() {
+			syncControlledField( control );
+		} );
+	} );
+
 	document.addEventListener( 'click', function( event ) {
 		var toggle = event.target.closest( '.kivano-block-popup-enabled-toggle' );
 
