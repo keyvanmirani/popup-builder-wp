@@ -30,17 +30,17 @@
 	max-height: calc(100vh - 48px);
 	max-width: min(var(--kivano-block-popup-max-width, 520px), calc(100vw - 32px));
 	overflow: auto;
-	padding: 28px;
+	padding: 0;
 	position: relative;
 	width: 100%;
 }
 
 .kivano-block-popup-close {
 	align-items: center;
-	background: #f2f4f7;
+	background: var(--kivano-popup-close-bg, #f3f4f6);
 	border: 0;
 	border-radius: 999px;
-	color: #24313d;
+	color: var(--kivano-popup-close-color, #111827);
 	cursor: pointer;
 	display: flex;
 	font-size: 26px;
@@ -49,23 +49,31 @@
 	line-height: 1;
 	padding: 0;
 	position: absolute;
-	right: 12px;
-	top: 12px;
+	inset-block-start: 12px;
+	inset-inline-end: 12px;
 	width: 36px;
+	z-index: 2;
 }
 
 .kivano-block-popup-close:hover,
 .kivano-block-popup-close:focus {
-	background: #e3e7ed;
 	outline: none;
 }
 
-.kivano-block-popup-content > :first-child {
-	margin-top: 0;
+.kivano-block-popup-close:focus-visible {
+	box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--kivano-popup-close-color, #111827);
 }
 
-.kivano-block-popup-content > :last-child {
-	margin-bottom: 0;
+.kivano-block-popup-content > * {
+	max-width: 100%;
+}
+
+.kivano-block-popup-content img,
+.kivano-block-popup-content video,
+.kivano-block-popup-content iframe,
+.kivano-block-popup-content canvas,
+.kivano-block-popup-content svg {
+	max-width: 100%;
 }
 
 .kivano-block-popup-open {
@@ -79,6 +87,5 @@
 
 	.kivano-block-popup-modal {
 		max-height: calc(100vh - 32px);
-		padding: 22px;
 	}
 }

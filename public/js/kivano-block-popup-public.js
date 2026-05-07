@@ -64,7 +64,17 @@
 			debugLog( 'Kivano Block Popup: popup opened' );
 		}
 
-		function hidePopup() {
+		function scheduleRepeat() {
+			window.clearTimeout( repeatTimer );
+
+			if ( ! repeatEnabled || oncePerSession || repeatInterval <= 0 ) {
+				return;
+			}
+
+			repeatTimer = window.setTimeout( showPopup, repeatInterval );
+		}
+
+		function closePopup() {
 			overlay.classList.remove( 'is-visible' );
 			overlay.hidden = true;
 			document.body.classList.remove( 'kivano-block-popup-open' );
@@ -75,10 +85,7 @@
 				return;
 			}
 
-			if ( repeatInterval > 0 ) {
-				window.clearTimeout( repeatTimer );
-				repeatTimer = window.setTimeout( showPopup, repeatInterval );
-			}
+			scheduleRepeat();
 		}
 
 		if ( oncePerSession && wasClosedThisSession() ) {
@@ -92,18 +99,18 @@
 		}
 
 		if ( closeButton ) {
-			closeButton.addEventListener( 'click', hidePopup );
+			closeButton.addEventListener( 'click', closePopup );
 		}
 
 		overlay.addEventListener( 'click', function( event ) {
 			if ( event.target === overlay ) {
-				hidePopup();
+				closePopup();
 			}
 		} );
 
 		document.addEventListener( 'keydown', function( event ) {
 			if ( 'Escape' === event.key && ! overlay.hidden ) {
-				hidePopup();
+				closePopup();
 			}
 		} );
 	} );

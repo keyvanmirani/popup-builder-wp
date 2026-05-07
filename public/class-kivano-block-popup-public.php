@@ -154,13 +154,19 @@ class Kivano_Block_Popup_Public {
 		setup_postdata( $post );
 
 		$content = apply_filters( 'the_content', $post->post_content );
+		$modal_style = sprintf(
+			'--kivano-block-popup-max-width: %dpx; --kivano-popup-close-bg: %s; --kivano-popup-close-color: %s;',
+			absint( $popup['max_width'] ),
+			esc_attr( $popup['close_bg_color'] ),
+			esc_attr( $popup['close_icon_color'] )
+		);
 
 		wp_reset_postdata();
 		$post = $previous_post;
 		?>
 		<!-- Kivano Block Popup rendered -->
 		<div id="kivano-block-popup-overlay" class="kivano-block-popup-overlay" hidden>
-			<div class="kivano-block-popup-modal" role="dialog" aria-modal="true" style="<?php echo esc_attr( '--kivano-block-popup-max-width: ' . $popup['max_width'] . 'px;' ); ?>">
+			<div class="kivano-block-popup-modal" role="dialog" aria-modal="true" style="<?php echo esc_attr( $modal_style ); ?>">
 				<?php if ( $popup['show_close_button'] ) : ?>
 					<button type="button" class="kivano-block-popup-close" aria-label="<?php esc_attr_e( 'Close popup', 'kivano-block-popup' ); ?>">&times;</button>
 				<?php endif; ?>
@@ -232,6 +238,8 @@ class Kivano_Block_Popup_Public {
 			'repeat_interval'   => $this->get_timing_meta_ms( $post->ID, '_kivano_block_popup_repeat_interval', 0, '_popup_builder_repeat_interval' ),
 			'max_width'         => max( 240, $this->get_number_meta( $post->ID, '_kivano_block_popup_max_width', 520, '_popup_builder_max_width' ) ),
 			'show_close_button' => '' === $show_close_button ? true : (bool) $show_close_button,
+			'close_bg_color'    => $this->get_color_meta( $post->ID, '_kivano_block_popup_close_bg_color', '#f3f4f6' ),
+			'close_icon_color'  => $this->get_color_meta( $post->ID, '_kivano_block_popup_close_icon_color', '#111827' ),
 			'once_per_session'  => $once_per_session,
 		);
 
@@ -339,6 +347,23 @@ class Kivano_Block_Popup_Public {
 		}
 
 		return $value;
+
+	}
+
+	/**
+	 * Get a hex color meta value with a default fallback.
+	 *
+	 * @since    1.0.0
+	 * @param    int    $post_id The post ID.
+	 * @param    string $key     Meta key.
+	 * @param    string $default Default hex color.
+	 * @return   string
+	 */
+	private function get_color_meta( $post_id, $key, $default ) {
+
+		$value = sanitize_hex_color( get_post_meta( $post_id, $key, true ) );
+
+		return $value ? $value : $default;
 
 	}
 

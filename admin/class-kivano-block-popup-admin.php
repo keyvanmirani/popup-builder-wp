@@ -196,6 +196,8 @@ class Kivano_Block_Popup_Admin {
 		$repeat_interval   = $this->get_timing_meta_ms( $post->ID, '_kivano_block_popup_repeat_interval', 0, '_popup_builder_repeat_interval' );
 		$max_width         = $this->get_number_meta( $post->ID, '_kivano_block_popup_max_width', 520, '_popup_builder_max_width' );
 		$show_close_button = $this->get_compat_meta( $post->ID, '_kivano_block_popup_show_close_button', '_popup_builder_show_close_button', true );
+		$close_bg_color   = $this->get_color_meta( $post->ID, '_kivano_block_popup_close_bg_color', '#f3f4f6' );
+		$close_icon_color = $this->get_color_meta( $post->ID, '_kivano_block_popup_close_icon_color', '#111827' );
 		$once_per_session  = (bool) $this->get_compat_meta( $post->ID, '_kivano_block_popup_once_per_session', '_popup_builder_once_per_session', '0' );
 		$show_on           = $this->get_compat_meta( $post->ID, '_kivano_block_popup_show_on', '_popup_builder_show_on', 'entire_site' );
 		$show_on_options   = $this->get_show_on_options();
@@ -247,6 +249,14 @@ class Kivano_Block_Popup_Admin {
 			</label>
 		</p>
 		<p>
+			<label for="kivano_block_popup_close_bg_color"><?php esc_html_e( 'Close button background color', 'kivano-block-popup' ); ?></label>
+			<input type="color" id="kivano_block_popup_close_bg_color" name="kivano_block_popup_close_bg_color" value="<?php echo esc_attr( $close_bg_color ); ?>">
+		</p>
+		<p>
+			<label for="kivano_block_popup_close_icon_color"><?php esc_html_e( 'Close button icon color', 'kivano-block-popup' ); ?></label>
+			<input type="color" id="kivano_block_popup_close_icon_color" name="kivano_block_popup_close_icon_color" value="<?php echo esc_attr( $close_icon_color ); ?>">
+		</p>
+		<p>
 			<label>
 				<input type="checkbox" name="kivano_block_popup_once_per_session" value="1" <?php checked( $once_per_session ); ?>>
 				<?php esc_html_e( 'Show once per session', 'kivano-block-popup' ); ?>
@@ -293,6 +303,8 @@ class Kivano_Block_Popup_Admin {
 		$repeat_interval   = isset( $_POST['kivano_block_popup_repeat_interval'] ) ? absint( wp_unslash( $_POST['kivano_block_popup_repeat_interval'] ) ) : $this->get_timing_meta_ms( $post_id, '_kivano_block_popup_repeat_interval', 0, '_popup_builder_repeat_interval' );
 		$max_width         = isset( $_POST['kivano_block_popup_max_width'] ) ? absint( wp_unslash( $_POST['kivano_block_popup_max_width'] ) ) : 520;
 		$show_close_button = isset( $_POST['kivano_block_popup_show_close_button'] ) ? '1' : '0';
+		$close_bg_color    = isset( $_POST['kivano_block_popup_close_bg_color'] ) ? $this->sanitize_hex_color_with_default( wp_unslash( $_POST['kivano_block_popup_close_bg_color'] ), '#f3f4f6' ) : '#f3f4f6';
+		$close_icon_color  = isset( $_POST['kivano_block_popup_close_icon_color'] ) ? $this->sanitize_hex_color_with_default( wp_unslash( $_POST['kivano_block_popup_close_icon_color'] ), '#111827' ) : '#111827';
 		$once_per_session  = isset( $_POST['kivano_block_popup_once_per_session'] ) ? '1' : '0';
 		$show_on           = isset( $_POST['kivano_block_popup_show_on'] ) ? sanitize_key( wp_unslash( $_POST['kivano_block_popup_show_on'] ) ) : 'entire_site';
 
@@ -308,6 +320,8 @@ class Kivano_Block_Popup_Admin {
 		update_post_meta( $post_id, '_kivano_block_popup_timing_migrated_to_ms', '1' );
 		update_post_meta( $post_id, '_kivano_block_popup_max_width', max( 240, $max_width ) );
 		update_post_meta( $post_id, '_kivano_block_popup_show_close_button', $show_close_button );
+		update_post_meta( $post_id, '_kivano_block_popup_close_bg_color', $close_bg_color );
+		update_post_meta( $post_id, '_kivano_block_popup_close_icon_color', $close_icon_color );
 		update_post_meta( $post_id, '_kivano_block_popup_once_per_session', $once_per_session );
 		update_post_meta( $post_id, '_kivano_block_popup_show_on', $show_on );
 
@@ -475,6 +489,39 @@ class Kivano_Block_Popup_Admin {
 		}
 
 		return $value;
+
+	}
+
+	/**
+	 * Get a hex color meta value with a default fallback.
+	 *
+	 * @since    1.0.0
+	 * @param    int    $post_id The post ID.
+	 * @param    string $key     Meta key.
+	 * @param    string $default Default hex color.
+	 * @return   string
+	 */
+	private function get_color_meta( $post_id, $key, $default ) {
+
+		$value = get_post_meta( $post_id, $key, true );
+
+		return $this->sanitize_hex_color_with_default( $value, $default );
+
+	}
+
+	/**
+	 * Sanitize a hex color with a default fallback.
+	 *
+	 * @since    1.0.0
+	 * @param    string $value   Raw color value.
+	 * @param    string $default Default hex color.
+	 * @return   string
+	 */
+	private function sanitize_hex_color_with_default( $value, $default ) {
+
+		$value = sanitize_hex_color( $value );
+
+		return $value ? $value : $default;
 
 	}
 
