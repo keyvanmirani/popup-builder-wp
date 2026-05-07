@@ -70,7 +70,7 @@ class Kivano_Block_Popup {
 		if ( defined( 'KIVANO_BLOCK_POPUP_VERSION' ) ) {
 			$this->version = KIVANO_BLOCK_POPUP_VERSION;
 		} else {
-			$this->version = '1.0.0';
+			$this->version = '0.1.1';
 		}
 		$this->plugin_name = 'kivano-block-popup';
 
