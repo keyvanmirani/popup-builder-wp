@@ -4,8 +4,8 @@
 	var settings = window.kivanoBlockPopupAdmin || {};
 	var messages = settings.i18n || {};
 
-	messages.enable = messages.enable || 'Enable popup';
-	messages.disable = messages.disable || 'Disable popup';
+	messages.enable = messages.enable || 'فعال‌سازی پاپ‌آپ';
+	messages.disable = messages.disable || 'غیرفعال‌سازی پاپ‌آپ';
 	messages.enabled = messages.enabled || 'Enabled';
 	messages.disabled = messages.disabled || 'Disabled';
 	messages.saving = messages.saving || 'Saving...';
@@ -96,6 +96,65 @@
 			field.disabled = ! control.checked;
 		}
 	}
+
+	function activateTab( tab ) {
+		var tabsRoot = tab.closest( '[data-kivano-block-popup-tabs]' );
+		var panelId = tab.getAttribute( 'aria-controls' );
+
+		if ( ! tabsRoot || ! panelId ) {
+			return;
+		}
+
+		tabsRoot.querySelectorAll( '[role="tab"]' ).forEach( function( currentTab ) {
+			var isActive = currentTab === tab;
+
+			currentTab.classList.toggle( 'is-active', isActive );
+			currentTab.setAttribute( 'aria-selected', isActive ? 'true' : 'false' );
+			currentTab.tabIndex = isActive ? 0 : -1;
+		} );
+
+		tabsRoot.querySelectorAll( '[role="tabpanel"]' ).forEach( function( panel ) {
+			var isActive = panel.id === panelId;
+
+			panel.classList.toggle( 'is-active', isActive );
+			panel.hidden = ! isActive;
+		} );
+	}
+
+	document.querySelectorAll( '[data-kivano-block-popup-tabs]' ).forEach( function( tabsRoot ) {
+		var tabs = Array.prototype.slice.call( tabsRoot.querySelectorAll( '[role="tab"]' ) );
+		var isRtl = document.documentElement.dir === 'rtl' || document.body.classList.contains( 'rtl' );
+
+		tabs.forEach( function( tab, index ) {
+			tab.addEventListener( 'click', function() {
+				activateTab( tab );
+			} );
+
+			tab.addEventListener( 'keydown', function( event ) {
+				var nextIndex;
+
+				if ( 'ArrowRight' === event.key || 'ArrowDown' === event.key ) {
+					nextIndex = 'ArrowRight' === event.key && isRtl
+						? ( index - 1 + tabs.length ) % tabs.length
+						: ( index + 1 ) % tabs.length;
+				} else if ( 'ArrowLeft' === event.key || 'ArrowUp' === event.key ) {
+					nextIndex = 'ArrowLeft' === event.key && isRtl
+						? ( index + 1 ) % tabs.length
+						: ( index - 1 + tabs.length ) % tabs.length;
+				} else if ( 'Home' === event.key ) {
+					nextIndex = 0;
+				} else if ( 'End' === event.key ) {
+					nextIndex = tabs.length - 1;
+				} else {
+					return;
+				}
+
+				event.preventDefault();
+				activateTab( tabs[ nextIndex ] );
+				tabs[ nextIndex ].focus();
+			} );
+		} );
+	} );
 
 	document.querySelectorAll( '[data-kivano-block-popup-controls]' ).forEach( function( control ) {
 		syncControlledField( control );

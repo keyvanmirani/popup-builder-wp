@@ -112,8 +112,8 @@ class Kivano_Block_Popup_Admin {
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'kivano_block_popup_toggle_enabled' ),
 				'i18n'    => array(
-					'enable'  => __( 'Enable popup', 'kivano-block-popup' ),
-					'disable' => __( 'Disable popup', 'kivano-block-popup' ),
+					'enable'  => __( 'فعال‌سازی پاپ‌آپ', 'kivano-block-popup' ),
+					'disable' => __( 'غیرفعال‌سازی پاپ‌آپ', 'kivano-block-popup' ),
 					'enabled' => __( 'Enabled', 'kivano-block-popup' ),
 					'disabled' => __( 'Disabled', 'kivano-block-popup' ),
 					'saving'  => __( 'Saving...', 'kivano-block-popup' ),
@@ -170,7 +170,7 @@ class Kivano_Block_Popup_Admin {
 
 		add_meta_box(
 			'kivano_block_popup_settings',
-			__( 'Popup Settings', 'kivano-block-popup' ),
+			esc_html__( 'تنظیمات پاپ‌آپ', 'kivano-block-popup' ),
 			array( $this, 'render_popup_meta_box' ),
 			'popup_builder',
 			'side',
@@ -210,68 +210,90 @@ class Kivano_Block_Popup_Admin {
 			$show_on = 'entire_site';
 		}
 		?>
-		<p>
-			<label>
-				<input type="checkbox" name="kivano_block_popup_enabled" value="1" <?php checked( $enabled ); ?>>
-				<?php esc_html_e( 'Enable popup', 'kivano-block-popup' ); ?>
-			</label>
-		</p>
-		<p>
-			<label>
-				<input type="checkbox" name="kivano_block_popup_delay_enabled" value="1" data-kivano-block-popup-controls="kivano_block_popup_delay" <?php checked( $delay_enabled ); ?>>
-				<?php esc_html_e( 'Enable display delay', 'kivano-block-popup' ); ?>
-			</label>
-		</p>
-		<p>
-			<label for="kivano_block_popup_delay"><?php esc_html_e( 'Display delay (ms)', 'kivano-block-popup' ); ?></label>
-			<input class="widefat" type="number" id="kivano_block_popup_delay" name="kivano_block_popup_delay" value="<?php echo esc_attr( $delay ); ?>" min="0" step="1" <?php disabled( ! $delay_enabled ); ?>>
-			<span class="description"><?php esc_html_e( '1000 ms = 1 second', 'kivano-block-popup' ); ?></span>
-		</p>
-		<p>
-			<label>
-				<input type="checkbox" name="kivano_block_popup_repeat_enabled" value="1" data-kivano-block-popup-controls="kivano_block_popup_repeat_interval" <?php checked( $repeat_enabled ); ?>>
-				<?php esc_html_e( 'Enable repeat interval', 'kivano-block-popup' ); ?>
-			</label>
-		</p>
-		<p>
-			<label for="kivano_block_popup_repeat_interval"><?php esc_html_e( 'Repeat interval (ms)', 'kivano-block-popup' ); ?></label>
-			<input class="widefat" type="number" id="kivano_block_popup_repeat_interval" name="kivano_block_popup_repeat_interval" value="<?php echo esc_attr( $repeat_interval ); ?>" min="0" step="1" <?php disabled( ! $repeat_enabled ); ?>>
-			<span class="description"><?php esc_html_e( '1000 ms = 1 second', 'kivano-block-popup' ); ?></span>
-		</p>
-		<p>
-			<label for="kivano_block_popup_max_width"><?php esc_html_e( 'Max width in px', 'kivano-block-popup' ); ?></label>
-			<input class="widefat" type="number" id="kivano_block_popup_max_width" name="kivano_block_popup_max_width" value="<?php echo esc_attr( $max_width ); ?>" min="240" step="1">
-		</p>
-		<p>
-			<label>
-				<input type="checkbox" name="kivano_block_popup_show_close_button" value="1" <?php checked( (bool) $show_close_button ); ?>>
-				<?php esc_html_e( 'Show close button', 'kivano-block-popup' ); ?>
-			</label>
-		</p>
-		<p>
-			<label for="kivano_block_popup_close_bg_color"><?php esc_html_e( 'Close button background color', 'kivano-block-popup' ); ?></label>
-			<input type="color" id="kivano_block_popup_close_bg_color" name="kivano_block_popup_close_bg_color" value="<?php echo esc_attr( $close_bg_color ); ?>">
-		</p>
-		<p>
-			<label for="kivano_block_popup_close_icon_color"><?php esc_html_e( 'Close button icon color', 'kivano-block-popup' ); ?></label>
-			<input type="color" id="kivano_block_popup_close_icon_color" name="kivano_block_popup_close_icon_color" value="<?php echo esc_attr( $close_icon_color ); ?>">
-		</p>
-		<p>
-			<label>
-				<input type="checkbox" name="kivano_block_popup_once_per_session" value="1" <?php checked( $once_per_session ); ?>>
-				<?php esc_html_e( 'Show once per session', 'kivano-block-popup' ); ?>
-			</label>
-		</p>
-		<p>
-			<label for="kivano_block_popup_show_on"><?php esc_html_e( 'Show on', 'kivano-block-popup' ); ?></label>
-			<select class="widefat" id="kivano_block_popup_show_on" name="kivano_block_popup_show_on">
-				<?php foreach ( $show_on_options as $value => $label ) : ?>
-					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $show_on, $value ); ?>>
-						<?php echo esc_html( $label ); ?>
-					</option>
-				<?php endforeach; ?>
-			</select>
-		</p>
+		<div class="kivano-block-popup-settings-tabs" data-kivano-block-popup-tabs>
+			<div class="kivano-block-popup-tablist" role="tablist" aria-label="<?php echo esc_attr__( 'تنظیمات پاپ‌آپ', 'kivano-block-popup' ); ?>">
+				<button type="button" id="kivano-block-popup-tab-status" class="kivano-block-popup-tab is-active" role="tab" aria-selected="true" aria-controls="kivano-block-popup-panel-status">
+					<?php echo esc_html__( 'وضعیت', 'kivano-block-popup' ); ?>
+				</button>
+				<button type="button" id="kivano-block-popup-tab-timing" class="kivano-block-popup-tab" role="tab" aria-selected="false" aria-controls="kivano-block-popup-panel-timing" tabindex="-1">
+					<?php echo esc_html__( 'زمان‌بندی', 'kivano-block-popup' ); ?>
+				</button>
+				<button type="button" id="kivano-block-popup-tab-appearance" class="kivano-block-popup-tab" role="tab" aria-selected="false" aria-controls="kivano-block-popup-panel-appearance" tabindex="-1">
+					<?php echo esc_html__( 'ظاهر', 'kivano-block-popup' ); ?>
+				</button>
+			</div>
+
+			<div id="kivano-block-popup-panel-status" class="kivano-block-popup-tabpanel is-active" role="tabpanel" aria-labelledby="kivano-block-popup-tab-status">
+				<p>
+					<label>
+						<input type="checkbox" name="kivano_block_popup_enabled" value="1" <?php checked( $enabled ); ?>>
+						<?php esc_html_e( 'فعال‌سازی پاپ‌آپ', 'kivano-block-popup' ); ?>
+					</label>
+				</p>
+				<p>
+					<label for="kivano_block_popup_show_on"><?php esc_html_e( 'محل نمایش', 'kivano-block-popup' ); ?></label>
+					<select class="widefat" id="kivano_block_popup_show_on" name="kivano_block_popup_show_on">
+						<?php foreach ( $show_on_options as $value => $label ) : ?>
+							<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $show_on, $value ); ?>>
+								<?php echo esc_html( $label ); ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</p>
+				<p>
+					<label>
+						<input type="checkbox" name="kivano_block_popup_once_per_session" value="1" <?php checked( $once_per_session ); ?>>
+						<?php esc_html_e( 'فقط یک‌بار در هر نشست', 'kivano-block-popup' ); ?>
+					</label>
+				</p>
+			</div>
+
+			<div id="kivano-block-popup-panel-timing" class="kivano-block-popup-tabpanel" role="tabpanel" aria-labelledby="kivano-block-popup-tab-timing" hidden>
+				<p>
+					<label>
+						<input type="checkbox" name="kivano_block_popup_delay_enabled" value="1" data-kivano-block-popup-controls="kivano_block_popup_delay" <?php checked( $delay_enabled ); ?>>
+						<?php esc_html_e( 'فعال‌سازی تأخیر نمایش', 'kivano-block-popup' ); ?>
+					</label>
+				</p>
+				<p>
+					<label for="kivano_block_popup_delay"><?php esc_html_e( 'تأخیر نمایش (میلی‌ثانیه)', 'kivano-block-popup' ); ?></label>
+					<input class="widefat" type="number" id="kivano_block_popup_delay" name="kivano_block_popup_delay" value="<?php echo esc_attr( $delay ); ?>" min="0" step="1" <?php disabled( ! $delay_enabled ); ?>>
+					<span class="description"><?php esc_html_e( '۱۰۰۰ میلی‌ثانیه = ۱ ثانیه', 'kivano-block-popup' ); ?></span>
+				</p>
+				<p>
+					<label>
+						<input type="checkbox" name="kivano_block_popup_repeat_enabled" value="1" data-kivano-block-popup-controls="kivano_block_popup_repeat_interval" <?php checked( $repeat_enabled ); ?>>
+						<?php esc_html_e( 'فعال‌سازی تکرار نمایش', 'kivano-block-popup' ); ?>
+					</label>
+				</p>
+				<p>
+					<label for="kivano_block_popup_repeat_interval"><?php esc_html_e( 'فاصله تکرار (میلی‌ثانیه)', 'kivano-block-popup' ); ?></label>
+					<input class="widefat" type="number" id="kivano_block_popup_repeat_interval" name="kivano_block_popup_repeat_interval" value="<?php echo esc_attr( $repeat_interval ); ?>" min="0" step="1" <?php disabled( ! $repeat_enabled ); ?>>
+					<span class="description"><?php esc_html_e( '۱۰۰۰ میلی‌ثانیه = ۱ ثانیه', 'kivano-block-popup' ); ?></span>
+				</p>
+			</div>
+
+			<div id="kivano-block-popup-panel-appearance" class="kivano-block-popup-tabpanel" role="tabpanel" aria-labelledby="kivano-block-popup-tab-appearance" hidden>
+				<p>
+					<label for="kivano_block_popup_max_width"><?php esc_html_e( 'حداکثر عرض (پیکسل)', 'kivano-block-popup' ); ?></label>
+					<input class="widefat" type="number" id="kivano_block_popup_max_width" name="kivano_block_popup_max_width" value="<?php echo esc_attr( $max_width ); ?>" min="240" step="1">
+				</p>
+				<p>
+					<label>
+						<input type="checkbox" name="kivano_block_popup_show_close_button" value="1" <?php checked( (bool) $show_close_button ); ?>>
+						<?php esc_html_e( 'نمایش دکمه بستن', 'kivano-block-popup' ); ?>
+					</label>
+				</p>
+				<p>
+					<label for="kivano_block_popup_close_bg_color"><?php esc_html_e( 'رنگ پس‌زمینه دکمه بستن', 'kivano-block-popup' ); ?></label>
+					<input type="color" id="kivano_block_popup_close_bg_color" name="kivano_block_popup_close_bg_color" value="<?php echo esc_attr( $close_bg_color ); ?>">
+				</p>
+				<p>
+					<label for="kivano_block_popup_close_icon_color"><?php esc_html_e( 'رنگ آیکن دکمه بستن', 'kivano-block-popup' ); ?></label>
+					<input type="color" id="kivano_block_popup_close_icon_color" name="kivano_block_popup_close_icon_color" value="<?php echo esc_attr( $close_icon_color ); ?>">
+				</p>
+			</div>
+		</div>
 		<?php
 
 	}
@@ -363,7 +385,7 @@ class Kivano_Block_Popup_Admin {
 
 		if ( 'kivano_block_popup_enabled' === $column ) {
 			$enabled = (bool) $this->get_compat_meta( $post_id, '_kivano_block_popup_enabled', '_popup_builder_enabled', '0' );
-			$label   = $enabled ? __( 'Disable popup', 'kivano-block-popup' ) : __( 'Enable popup', 'kivano-block-popup' );
+			$label   = $enabled ? __( 'غیرفعال‌سازی پاپ‌آپ', 'kivano-block-popup' ) : __( 'فعال‌سازی پاپ‌آپ', 'kivano-block-popup' );
 			$status  = $enabled ? __( 'Enabled', 'kivano-block-popup' ) : __( 'Disabled', 'kivano-block-popup' );
 
 			printf(
@@ -577,10 +599,10 @@ class Kivano_Block_Popup_Admin {
 	private function get_show_on_options() {
 
 		return array(
-			'entire_site'   => __( 'Entire site', 'kivano-block-popup' ),
-			'homepage_only' => __( 'Homepage only', 'kivano-block-popup' ),
-			'posts_only'    => __( 'Posts only', 'kivano-block-popup' ),
-			'pages_only'    => __( 'Pages only', 'kivano-block-popup' ),
+			'entire_site'   => __( 'کل سایت', 'kivano-block-popup' ),
+			'homepage_only' => __( 'فقط صفحه اصلی', 'kivano-block-popup' ),
+			'posts_only'    => __( 'فقط نوشته‌ها', 'kivano-block-popup' ),
+			'pages_only'    => __( 'فقط برگه‌ها', 'kivano-block-popup' ),
 		);
 
 	}

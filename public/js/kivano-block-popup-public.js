@@ -59,8 +59,8 @@
 			}
 
 			overlay.hidden = false;
-			overlay.classList.add( 'is-visible' );
-			document.body.classList.add( 'kivano-block-popup-open' );
+			overlay.classList.add( 'is-open' );
+			document.body.classList.add( 'kivano-block-popup-body-lock' );
 			debugLog( 'Kivano Block Popup: popup opened' );
 		}
 
@@ -75,9 +75,9 @@
 		}
 
 		function closePopup() {
-			overlay.classList.remove( 'is-visible' );
+			overlay.classList.remove( 'is-open' );
 			overlay.hidden = true;
-			document.body.classList.remove( 'kivano-block-popup-open' );
+			document.body.classList.remove( 'kivano-block-popup-body-lock' );
 			debugLog( 'Kivano Block Popup: popup closed' );
 
 			if ( oncePerSession ) {
