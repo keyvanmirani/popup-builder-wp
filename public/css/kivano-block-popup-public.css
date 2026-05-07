@@ -1,15 +1,13 @@
 .kivano-block-popup-overlay {
 	align-items: center;
 	background: rgba(0, 0, 0, 0.55);
-	bottom: 0;
 	display: flex;
 	justify-content: center;
-	left: 0;
+	inset: 0;
 	opacity: 0;
-	padding: 24px;
+	overflow: auto;
+	padding: 16px;
 	position: fixed;
-	right: 0;
-	top: 0;
 	transition: opacity 160ms ease;
 	z-index: 99999;
 }
@@ -18,21 +16,18 @@
 	display: none;
 }
 
-.kivano-block-popup-overlay.is-visible {
+.kivano-block-popup-overlay.is-open {
 	opacity: 1;
 }
 
 .kivano-block-popup-modal {
-	background: #fff;
-	border-radius: 8px;
-	box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
-	color: #1f2933;
-	max-height: calc(100vh - 48px);
+	box-sizing: border-box;
+	flex: 0 1 auto;
+	margin: 0;
+	max-height: calc(100vh - 32px);
 	max-width: min(var(--kivano-block-popup-max-width, 520px), calc(100vw - 32px));
 	overflow: auto;
-	padding: 0;
 	position: relative;
-	width: 100%;
 }
 
 .kivano-block-popup-close {
@@ -47,6 +42,7 @@
 	height: 36px;
 	justify-content: center;
 	line-height: 1;
+	margin: 0;
 	padding: 0;
 	position: absolute;
 	inset-block-start: 12px;
@@ -64,28 +60,6 @@
 	box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--kivano-popup-close-color, #111827);
 }
 
-.kivano-block-popup-content > * {
-	max-width: 100%;
-}
-
-.kivano-block-popup-content img,
-.kivano-block-popup-content video,
-.kivano-block-popup-content iframe,
-.kivano-block-popup-content canvas,
-.kivano-block-popup-content svg {
-	max-width: 100%;
-}
-
-.kivano-block-popup-open {
+.kivano-block-popup-body-lock {
 	overflow: hidden;
-}
-
-@media (max-width: 600px) {
-	.kivano-block-popup-overlay {
-		padding: 16px;
-	}
-
-	.kivano-block-popup-modal {
-		max-height: calc(100vh - 32px);
-	}
 }
