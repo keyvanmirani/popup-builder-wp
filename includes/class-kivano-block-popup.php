@@ -159,6 +159,7 @@ class Kivano_Block_Popup {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'add_popup_meta_boxes' );
 		$this->loader->add_action( 'save_post_popup_builder', $plugin_admin, 'save_popup_meta' );
+		$this->loader->add_action( 'wp_ajax_kivano_block_popup_toggle_enabled', $plugin_admin, 'ajax_toggle_popup_enabled' );
 
 		$this->loader->add_filter( 'manage_popup_builder_posts_columns', $plugin_admin, 'add_popup_columns' );
 		$this->loader->add_action( 'manage_popup_builder_posts_custom_column', $plugin_admin, 'render_popup_columns', 10, 2 );

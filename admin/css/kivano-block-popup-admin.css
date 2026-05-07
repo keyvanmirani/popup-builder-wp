@@ -1,4 +1,87 @@
-/**
- * All of the CSS for your admin-specific functionality should be
- * included in this file.
- */
+.column-kivano_block_popup_enabled {
+	width: 130px;
+}
+
+.kivano-block-popup-enabled-toggle {
+	align-items: center;
+	background: transparent;
+	border: 0;
+	color: #1d2327;
+	cursor: pointer;
+	display: inline-flex;
+	gap: 8px;
+	min-height: 32px;
+	padding: 2px;
+	position: relative;
+}
+
+.kivano-block-popup-enabled-toggle:focus {
+	outline: none;
+}
+
+.kivano-block-popup-enabled-toggle:focus-visible .kivano-block-popup-toggle-track {
+	box-shadow: 0 0 0 2px #fff, 0 0 0 4px #2271b1;
+}
+
+.kivano-block-popup-enabled-toggle:disabled {
+	cursor: progress;
+	opacity: 0.78;
+}
+
+.kivano-block-popup-toggle-track {
+	background: #8c8f94;
+	border-radius: 999px;
+	box-sizing: border-box;
+	display: inline-flex;
+	height: 22px;
+	padding: 3px;
+	transition: background-color 160ms ease;
+	width: 40px;
+}
+
+.kivano-block-popup-toggle-thumb {
+	background: #fff;
+	border-radius: 50%;
+	box-shadow: 0 1px 2px rgba( 0, 0, 0, 0.28 );
+	display: block;
+	height: 16px;
+	transform: translateX( 0 );
+	transition: transform 160ms ease;
+	width: 16px;
+}
+
+.kivano-block-popup-enabled-toggle.is-enabled .kivano-block-popup-toggle-track {
+	background: #00a32a;
+}
+
+.kivano-block-popup-enabled-toggle.is-enabled .kivano-block-popup-toggle-thumb {
+	transform: translateX( 18px );
+}
+
+.kivano-block-popup-toggle-status {
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.kivano-block-popup-enabled-toggle.is-saving .kivano-block-popup-toggle-track::after {
+	animation: kivano-block-popup-saving 700ms linear infinite;
+	border: 2px solid rgba( 255, 255, 255, 0.45 );
+	border-radius: 50%;
+	border-top-color: #fff;
+	content: "";
+	height: 10px;
+	left: 15px;
+	position: absolute;
+	top: 8px;
+	width: 10px;
+}
+
+.kivano-block-popup-enabled-toggle.has-error .kivano-block-popup-toggle-track {
+	background: #d63638;
+}
+
+@keyframes kivano-block-popup-saving {
+	to {
+		transform: rotate( 360deg );
+	}
+}

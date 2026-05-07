@@ -59,7 +59,7 @@ class Kivano_Block_Popup_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles( $hook_suffix ) {
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -72,6 +72,10 @@ class Kivano_Block_Popup_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
+
+		if ( ! $this->is_popup_admin_screen( $hook_suffix ) ) {
+			return;
+		}
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/kivano-block-popup-admin.css', array(), $this->version, 'all' );
 
@@ -82,7 +86,7 @@ class Kivano_Block_Popup_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts( $hook_suffix ) {
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -96,7 +100,27 @@ class Kivano_Block_Popup_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kivano-block-popup-admin.js', array( 'jquery' ), $this->version, false );
+		if ( ! $this->is_popup_admin_screen( $hook_suffix ) ) {
+			return;
+		}
+
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kivano-block-popup-admin.js', array( 'wp-a11y' ), $this->version, true );
+		wp_localize_script(
+			$this->plugin_name,
+			'kivanoBlockPopupAdmin',
+			array(
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+				'nonce'   => wp_create_nonce( 'kivano_block_popup_toggle_enabled' ),
+				'i18n'    => array(
+					'enable'  => __( 'Enable popup', 'kivano-block-popup' ),
+					'disable' => __( 'Disable popup', 'kivano-block-popup' ),
+					'enabled' => __( 'Enabled', 'kivano-block-popup' ),
+					'disabled' => __( 'Disabled', 'kivano-block-popup' ),
+					'saving'  => __( 'Saving...', 'kivano-block-popup' ),
+					'error'   => __( 'Could not update popup status. Please try again.', 'kivano-block-popup' ),
+				),
+			)
+		);
 
 	}
 
@@ -303,7 +327,19 @@ class Kivano_Block_Popup_Admin {
 	public function render_popup_columns( $column, $post_id ) {
 
 		if ( 'kivano_block_popup_enabled' === $column ) {
-			echo $this->get_compat_meta( $post_id, '_kivano_block_popup_enabled', '_popup_builder_enabled', '0' ) ? esc_html__( 'Yes', 'kivano-block-popup' ) : esc_html__( 'No', 'kivano-block-popup' );
+			$enabled = (bool) $this->get_compat_meta( $post_id, '_kivano_block_popup_enabled', '_popup_builder_enabled', '0' );
+			$label   = $enabled ? __( 'Disable popup', 'kivano-block-popup' ) : __( 'Enable popup', 'kivano-block-popup' );
+			$status  = $enabled ? __( 'Enabled', 'kivano-block-popup' ) : __( 'Disabled', 'kivano-block-popup' );
+
+			printf(
+				'<button type="button" class="kivano-block-popup-enabled-toggle%s" role="switch" aria-checked="%s" aria-label="%s" data-post-id="%d" data-enabled="%d"><span class="kivano-block-popup-toggle-track" aria-hidden="true"><span class="kivano-block-popup-toggle-thumb"></span></span><span class="kivano-block-popup-toggle-status">%s</span></button>',
+				$enabled ? ' is-enabled' : '',
+				$enabled ? 'true' : 'false',
+				esc_attr( $label ),
+				absint( $post_id ),
+				$enabled ? 1 : 0,
+				esc_html( $status )
+			);
 		}
 
 		if ( 'kivano_block_popup_delay' === $column ) {
@@ -321,6 +357,46 @@ class Kivano_Block_Popup_Admin {
 				absint( $this->get_number_meta( $post_id, '_kivano_block_popup_repeat_interval', 4, '_popup_builder_repeat_interval' ) )
 			);
 		}
+
+	}
+
+	/**
+	 * Toggle popup enabled status from the admin list table.
+	 *
+	 * @since    1.0.0
+	 */
+	public function ajax_toggle_popup_enabled() {
+
+		check_ajax_referer( 'kivano_block_popup_toggle_enabled', 'kivano_block_popup_toggle_enabled_nonce' );
+
+		$post_id = isset( $_POST['post_id'] ) ? absint( wp_unslash( $_POST['post_id'] ) ) : 0;
+		$enabled = isset( $_POST['enabled'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['enabled'] ) ) ? '1' : '0';
+
+		if ( ! $post_id || 'popup_builder' !== get_post_type( $post_id ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Invalid popup.', 'kivano-block-popup' ),
+				),
+				400
+			);
+		}
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'You are not allowed to edit this popup.', 'kivano-block-popup' ),
+				),
+				403
+			);
+		}
+
+		update_post_meta( $post_id, '_kivano_block_popup_enabled', $enabled );
+
+		wp_send_json_success(
+			array(
+				'enabled' => '1' === $enabled,
+			)
+		);
 
 	}
 
@@ -366,6 +442,25 @@ class Kivano_Block_Popup_Admin {
 		$value = get_post_meta( $post_id, $legacy_key, true );
 
 		return '' === $value ? $default : $value;
+
+	}
+
+	/**
+	 * Check whether an admin asset request belongs to the popup post type.
+	 *
+	 * @since    1.0.0
+	 * @param    string $hook_suffix Current admin page hook.
+	 * @return   bool
+	 */
+	private function is_popup_admin_screen( $hook_suffix ) {
+
+		$screen = get_current_screen();
+
+		if ( $screen && 'popup_builder' === $screen->post_type ) {
+			return true;
+		}
+
+		return in_array( $hook_suffix, array( 'edit.php', 'post.php', 'post-new.php' ), true ) && isset( $_GET['post_type'] ) && 'popup_builder' === sanitize_key( wp_unslash( $_GET['post_type'] ) );
 
 	}
 
